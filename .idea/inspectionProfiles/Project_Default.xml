@@ -1,0 +1,88 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="Eslint" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <list>
+          <option value="appdirs" />
+          <option value="blinker" />
+          <option value="cachetools" />
+          <option value="certifi" />
+          <option value="charset-normalizer" />
+          <option value="click" />
+          <option value="decorator" />
+          <option value="dnspython" />
+          <option value="et-xmlfile" />
+          <option value="fernet" />
+          <option value="Flask" />
+          <option value="flask-session" />
+          <option value="google-api-core" />
+          <option value="google-auth" />
+          <option value="google-cloud-core" />
+          <option value="google-cloud-storage" />
+          <option value="google-crc32c" />
+          <option value="google-resumable-media" />
+          <option value="googleapis-common-protos" />
+          <option value="idna" />
+          <option value="itsdangerous" />
+          <option value="jdcal" />
+          <option value="Jinja2" />
+          <option value="MarkupSafe" />
+          <option value="openpyxl" />
+          <option value="packaging" />
+          <option value="pdfrw" />
+          <option value="peewee" />
+          <option value="phonenumbers" />
+          <option value="Pillow" />
+          <option value="app-models" />
+          <option value="app-clients" />
+          <option value="plumbum" />
+          <option value="protobuf" />
+          <option value="psycopg2-binary" />
+          <option value="pyaes" />
+          <option value="pyasn1" />
+          <option value="pyasn1-modules" />
+          <option value="pyIsEmail" />
+          <option value="PyJWT" />
+          <option value="pymongo" />
+          <option value="pyparsing" />
+          <option value="python-magic" />
+          <option value="pytz" />
+          <option value="requests" />
+          <option value="rpyc" />
+          <option value="rsa" />
+          <option value="six" />
+          <option value="twilio" />
+          <option value="urllib3" />
+          <option value="validators" />
+          <option value="Werkzeug" />
+          <option value="xlrd" />
+          <option value="uwsgi" />
+          <option value="gevent" />
+          <option value="greenlet" />
+          <option value="limits" />
+          <option value="Flask-Limiter" />
+          <option value="redis" />
+          <option value="psycogreen" />
+          <option value="APIFlask" />
+          <option value="newrelic" />
+          <option value="Flask-Cors" />
+          <option value="passlib" />
+          <option value="httpx" />
+          <option value="pdfkit" />
+          <option value="segno" />
+          <option value="firebase-admin" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="PyPep8Inspection" enabled="true" level="INFORMATION" enabled_by_default="true">
+      <option name="ignoredErrors">
+        <list>
+          <option value="E302" />
+        </list>
+      </option>
+    </inspection_tool>
+    <inspection_tool class="SqlNoDataSourceInspection" enabled="false" level="WARNING" enabled_by_default="false" />
+  </profile>
+</component>

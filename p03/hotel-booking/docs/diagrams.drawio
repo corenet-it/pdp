@@ -1,0 +1,70 @@
+<mxfile host="app.diagrams.net">
+  <diagram name="Use cases" id="uAZa6fj5sCrPW8Fgojzo">
+    <mxGraphModel dx="1037" dy="714" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0"/>
+        <mxCell id="1" parent="0"/>
+
+        <!-- System boundary -->
+        <mxCell id="system" value="Hotel booking app" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=center;spacingTop=15;fontStyle=1;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="240" y="100" width="540" height="540" as="geometry"/>
+        </mxCell>
+
+        <!-- Actors -->
+        <mxCell id="guest" value="Guest" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="230" width="50" height="90" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="receptionist" value="Receptionist" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="70" y="450" width="70" height="100" as="geometry"/>
+        </mxCell>
+
+        <!-- Use cases -->
+        <mxCell id="search" value="Search free rooms" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="370" y="180" width="250" height="65" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="book" value="Book a room" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="370" y="290" width="250" height="65" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="view" value="View a booking" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="370" y="400" width="250" height="65" as="geometry"/>
+        </mxCell>
+
+        <mxCell id="cancel" value="Cancel a booking" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="370" y="510" width="250" height="65" as="geometry"/>
+        </mxCell>
+
+        <!-- Guest associations -->
+        <mxCell id="g1" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="guest" target="search">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="g2" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="guest" target="book">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="g3" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="guest" target="view">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="g4" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="guest" target="cancel">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+        <!-- Receptionist associations -->
+        <mxCell id="r1" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="receptionist" target="search">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="r2" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="receptionist" target="book">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="r3" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="receptionist" target="view">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+        <mxCell id="r4" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="receptionist" target="cancel">
+          <mxGeometry relative="1" as="geometry"/>
+        </mxCell>
+
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
