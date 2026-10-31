@@ -1,0 +1,181 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net" modified="2026-10-31T00:00:00.000Z" version="24.7.17">
+  <diagram name="Use cases" id="uAZa6fj5sCrPW8Fgojzo">
+    <mxGraphModel dx="1037" dy="714" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="850" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="system" value="Hotel booking app" style="rounded=0;whiteSpace=wrap;html=1;verticalAlign=top;align=center;spacingTop=15;fontStyle=1;fontSize=18;" vertex="1" parent="1">
+          <mxGeometry x="240" y="100" width="540" height="540" as="geometry" />
+        </mxCell>
+        <mxCell id="guest" value="Guest" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="80" y="230" width="50" height="90" as="geometry" />
+        </mxCell>
+        <mxCell id="receptionist" value="Receptionist" style="shape=umlActor;verticalLabelPosition=bottom;verticalAlign=top;html=1;outlineConnect=0;" vertex="1" parent="1">
+          <mxGeometry x="70" y="450" width="70" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="search" value="Search free rooms" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="370" y="180" width="250" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="book" value="Book a room" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="370" y="290" width="250" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="view" value="View a booking" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="370" y="400" width="250" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="cancel" value="Cancel a booking" style="ellipse;whiteSpace=wrap;html=1;" vertex="1" parent="1">
+          <mxGeometry x="370" y="510" width="250" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="g1" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="guest" target="search">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g2" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="guest" target="book">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g3" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="guest" target="view">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="g4" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="guest" target="cancel">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r1" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="receptionist" target="search">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r2" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="receptionist" target="book">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r3" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="receptionist" target="view">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r4" style="endArrow=none;html=1;rounded=0;" edge="1" parent="1" source="receptionist" target="cancel">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="context-map" name="Context map">
+    <mxGraphModel dx="1400" dy="1000" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1000" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="&lt;b&gt;P05 · Hotel business contexts&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=18;fontSize=15;fillColor=none;strokeColor=none;spacing=0;fontSize=28;" vertex="1" parent="1">
+          <mxGeometry x="40" y="30" width="1320" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Arrows represent questions, commands and replies. Solid = current interaction; dashed = planned / not wired.&lt;br&gt;Message fields and exact P06 status: docs/contexts.md → Between contexts." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=18;fontSize=15;fillColor=none;strokeColor=none;spacing=0;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="40" y="90" width="1320" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="rooms" value="&lt;b&gt;Rooms&lt;/b&gt;&lt;br&gt;&lt;br&gt;Catalogue · Room(number, type)&lt;br&gt;RoomCatalog.all()&lt;br&gt;&lt;br&gt;Owns future price and maintenance rules." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=18;fontSize=15;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="60" y="330" width="280" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="reservations" value="&lt;b&gt;Reservations&lt;/b&gt;&lt;br&gt;&lt;br&gt;Guest · Stay · Booking rule&lt;br&gt;Confirmed / Cancelled&lt;br&gt;Overlap · Cancellation · Lookup&lt;br&gt;&lt;br&gt;Save before requesting confirmation." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=18;fontSize=15;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="520" y="330" width="320" height="200" as="geometry" />
+        </mxCell>
+        <mxCell id="payments" value="&lt;b&gt;Payments&lt;/b&gt;&lt;br&gt;&lt;br&gt;Deposit policy · Payment outcome&lt;br&gt;Paid / Declined&lt;br&gt;&lt;br&gt;Contract + simulation only in P06." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=18;fontSize=15;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="170" width="300" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="notifications" value="&lt;b&gt;Notifications&lt;/b&gt;&lt;br&gt;&lt;br&gt;Confirmation message&lt;br&gt;Email / SMS delivery&lt;br&gt;Return None or raise an exception&lt;br&gt;&lt;br&gt;Simulated senders in P06." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=18;fontSize=15;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1020" y="570" width="300" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="r1" value="Catalogue question&#10;(via main.py wiring)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#44546a;exitX=0;exitY=0.25;entryX=1;entryY=0.25;" edge="1" parent="1" source="reservations" target="rooms">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r2" value="RoomOutOfService&#10;(planned)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#a66f00;dashed=1;exitX=1;exitY=0.75;entryX=0;entryY=0.75;" edge="1" parent="1" source="rooms" target="reservations">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="r3" value="take_deposit(id, amount)&#10;(not wired)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#a66f00;dashed=1;exitX=0.5;exitY=0;entryX=0;entryY=0.3;" edge="1" parent="1" source="reservations" target="payments">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="227" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r4" value="PaymentStatus&#10;(reply, not wired)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#a66f00;dashed=1;exitX=0;exitY=0.75;entryX=1;entryY=0.25;" edge="1" parent="1" source="payments" target="reservations">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="940" y="312" />
+              <mxPoint x="940" y="380" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r5" value="send_confirmation(Confirmation)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#44546a;exitX=0.5;exitY=1;entryX=0;entryY=0.25;" edge="1" parent="1" source="reservations" target="notifications">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="680" y="622" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="r6" value="None / exception&#10;(delivery result)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#44546a;exitX=0;exitY=0.75;entryX=1;entryY=0.75;" edge="1" parent="1" source="notifications" target="reservations">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="900" y="727" />
+              <mxPoint x="900" y="480" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="legend" value="&lt;b&gt;Business boundaries&lt;/b&gt;&lt;br&gt;Reservations coordinates the booking rule. Other contexts own their rules and state.&lt;br&gt;A response or future event does not imply a reverse Python import.&lt;br&gt;Pricing, maintenance, 30% deposits and durable delivery are design scope; see each contract’s P06 status." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=18;fontSize=15;fillColor=#f5f5f5;strokeColor=#b3b3b3;" vertex="1" parent="1">
+          <mxGeometry x="60" y="840" width="1260" height="120" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="modules" name="Modules">
+    <mxGraphModel dx="1400" dy="1100" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="1100" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="title" value="&lt;b&gt;P06 · One application, four modules&lt;/b&gt;" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=18;fontSize=15;fillColor=none;strokeColor=none;spacing=0;fontSize=28;" vertex="1" parent="1">
+          <mxGeometry x="40" y="30" width="1320" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="subtitle" value="Solid arrows show current imports. Only main.py and tests select another module’s internal adapters." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=18;fontSize=15;fillColor=none;strokeColor=none;spacing=0;fontSize=16;" vertex="1" parent="1">
+          <mxGeometry x="40" y="90" width="1320" height="40" as="geometry" />
+        </mxCell>
+        <mxCell id="wiring" value="&lt;b&gt;main.py · composition root&lt;/b&gt;&lt;br&gt;InMemoryRoomCatalog → list[Room]&lt;br&gt;InMemoryReservationStore + EmailNotificationSender → BookingService" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=18;fontSize=15;fillColor=#e1d5e7;strokeColor=#9673a6;" vertex="1" parent="1">
+          <mxGeometry x="420" y="160" width="560" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="rooms" value="&lt;b&gt;Rooms · hotel_booking.rooms&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Public&lt;/b&gt;&lt;br&gt;Room · RoomCatalog&lt;br&gt;&lt;br&gt;&lt;b&gt;Internal&lt;/b&gt;&lt;br&gt;InMemoryRoomCatalog" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=18;fontSize=15;fillColor=#dae8fc;strokeColor=#6c8ebf;" vertex="1" parent="1">
+          <mxGeometry x="40" y="430" width="350" height="250" as="geometry" />
+        </mxCell>
+        <mxCell id="reservations" value="&lt;b&gt;Reservations · hotel_booking.reservations&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Public&lt;/b&gt;&lt;br&gt;BookingService · BookingResult&lt;br&gt;Reservation · ReservationStatus&lt;br&gt;DateRange · Guest · ReservationStore&lt;br&gt;&lt;br&gt;&lt;b&gt;Internal&lt;/b&gt;&lt;br&gt;InMemoryReservationStore" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=18;fontSize=15;fillColor=#d5e8d4;strokeColor=#82b366;" vertex="1" parent="1">
+          <mxGeometry x="520" y="430" width="420" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="notifications" value="&lt;b&gt;Notifications&lt;/b&gt;&lt;br&gt;hotel_booking.notifications&lt;br&gt;&lt;br&gt;&lt;b&gt;Public&lt;/b&gt;&lt;br&gt;Confirmation · NotificationSender&lt;br&gt;&lt;br&gt;&lt;b&gt;Internal&lt;/b&gt;&lt;br&gt;EmailNotificationSender&lt;br&gt;SmsNotificationSender" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=18;fontSize=15;fillColor=#f8cecc;strokeColor=#b85450;" vertex="1" parent="1">
+          <mxGeometry x="1050" y="430" width="310" height="300" as="geometry" />
+        </mxCell>
+        <mxCell id="payments" value="&lt;b&gt;Payments · hotel_booking.payments&lt;/b&gt;&lt;br&gt;&lt;br&gt;&lt;b&gt;Public:&lt;/b&gt; PaymentStatus · PaymentService&lt;br&gt;&lt;b&gt;Internal:&lt;/b&gt; SimulatedPaymentService&lt;br&gt;&lt;br&gt;No booking call/import yet; integration reserved for P17." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=18;fontSize=15;fillColor=#fff2cc;strokeColor=#d6b656;" vertex="1" parent="1">
+          <mxGeometry x="520" y="810" width="420" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="w1" value="catalogue adapter" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#44546a;exitX=0.1;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="wiring" target="rooms">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="476" y="350" />
+              <mxPoint x="215" y="350" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="w2" value="service + store adapter" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#44546a;exitX=0.55;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="wiring" target="reservations">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="w3" value="email adapter" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#44546a;exitX=0.9;exitY=1;entryX=0.5;entryY=0;" edge="1" parent="1" source="wiring" target="notifications">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="924" y="350" />
+              <mxPoint x="1205" y="350" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="m1" value="Room&#10;(public)" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#44546a;exitX=0;exitY=0.4;entryX=1;entryY=0.48;" edge="1" parent="1" source="reservations" target="rooms">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="m2" value="Confirmation&#10;NotificationSender" style="edgeStyle=orthogonalEdgeStyle;rounded=0;html=1;endArrow=block;endFill=1;fontSize=13;labelBackgroundColor=#ffffff;strokeWidth=2;strokeColor=#44546a;exitX=1;exitY=0.5;entryX=0;entryY=0.5;" edge="1" parent="1" source="reservations" target="notifications">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="checks" value="&lt;b&gt;Three architecture checks&lt;/b&gt;&lt;br&gt;1. No cross-module internal imports.&lt;br&gt;2. Rooms imports no other module.&lt;br&gt;3. Payments / Notifications do not import Reservations.&lt;br&gt;&lt;br&gt;Run: lint-imports --no-cache" style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=18;fontSize=15;fillColor=#f5f5f5;strokeColor=#b3b3b3;" vertex="1" parent="1">
+          <mxGeometry x="40" y="810" width="420" height="210" as="geometry" />
+        </mxCell>
+        <mxCell id="behaviour" value="&lt;b&gt;Behaviour retained&lt;/b&gt;&lt;br&gt;8 tests · 9 demo lines&lt;br&gt;Race still double-books (P09).&lt;br&gt;&lt;br&gt;Confirmation carries five values;&lt;br&gt;Notifications never imports Reservation." style="rounded=1;whiteSpace=wrap;html=1;align=left;verticalAlign=top;spacing=18;fontSize=15;fillColor=#f5f5f5;strokeColor=#b3b3b3;" vertex="1" parent="1">
+          <mxGeometry x="1000" y="810" width="360" height="210" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

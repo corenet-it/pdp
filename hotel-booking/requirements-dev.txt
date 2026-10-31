@@ -1,0 +1,3 @@
+# The app and its eight behaviour tests use only the Python standard library.
+# P06 architecture checks (tested with Python 3.11):
+import-linter==2.15

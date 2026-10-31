@@ -24,3 +24,12 @@ Check: Maya cancels R101 → R7 is free again for 12–14.
 ## R5 · View
 A booking can be looked up by its id.
 Check: R101 → Maya, R7, 12–14 November, Confirmed.
+
+## R6 · Confirmation
+Each accepted booking requests one confirmation for the guest. A refused booking
+does not send a confirmation. Email and SMS senders implement the same contract.
+If sending fails, the saved reservation remains Confirmed, the result remains
+Accepted with its reservation id, and `notification_failed` is True.
+Check: Maya and Nora book successfully, Omar is refused → two confirmations.
+Check: the sender fails for Maya → Accepted R101, `notification_failed=True`,
+and R101 is still saved and blocks the room.
