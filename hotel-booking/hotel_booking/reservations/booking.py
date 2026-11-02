@@ -62,5 +62,8 @@ class BookingService:
         return BookingResult("Accepted", reservation.id)
 
     def cancel(self, reservation_id: str) -> bool:
+        cancel = getattr(self.store, "cancel", None)
+        if cancel is not None:
+            return cancel(reservation_id)
         reservation = self.store.find(reservation_id)
         return reservation is not None and reservation.cancel()

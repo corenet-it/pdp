@@ -6,6 +6,7 @@ python main.py --race   -> two guests book the same room at the same moment
 from __future__ import annotations
 
 import sys
+import os
 import threading
 import time
 from datetime import date
@@ -75,4 +76,18 @@ def run_race() -> None:
 
 
 if __name__ == "__main__":
-    run_race() if "--race" in sys.argv else run_demo()
+    if "--demo" in sys.argv:
+        run_demo()
+    elif "--race" in sys.argv:
+        run_race()
+    else:
+        from dotenv import load_dotenv
+        import uvicorn
+        from hotel_booking.api import create_app
+        from hotel_booking.reservations.internal import PostgresReservationStore
+        from hotel_booking.rooms.internal import PostgresRoomCatalog
+
+        load_dotenv()
+        uvicorn.run(create_app(PostgresRoomCatalog(), PostgresReservationStore()),
+                    host=os.getenv("HOST", "0.0.0.0"),
+                    port=int(os.getenv("PORT", "5080")))

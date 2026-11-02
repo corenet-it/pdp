@@ -6,7 +6,12 @@ papkalariga murojaat qilinmaydi. Python 3.11 yoki yangiroq versiya kerak.
 
 ## Ishga tushirish
 
-Terminalni `hotel-booking/` papkasida oching:
+Terminalni `hotel-booking/` papkasida oching. `.env.example` faylidan `.env`
+yarating, so‘ng `docker compose up --build` bajaring. Compose PostgreSQL va API
+servislarini ishga tushiradi. FastAPI hujjatlari `http://localhost:5080/docs` da.
+Holatini ko‘rish uchun `docker compose ps`, loglar uchun `docker compose logs -f app`.
+
+P06 konsol namoyishlari:
 
 ```sh
 python -m unittest -v
@@ -14,7 +19,8 @@ python main.py
 python main.py --race
 ```
 
-Ilova va uning 8 ta testi faqat Python standart kutubxonasidan foydalanadi.
+P06 domen testlari Python standart kutubxonasidan foydalanadi. API va PostgreSQL
+uchun bog‘liqliklar `requirements.txt`-da keltirilgan.
 Modullar chegaralarini tekshiruvchi vositani bir marta o‘rnating:
 
 ```sh

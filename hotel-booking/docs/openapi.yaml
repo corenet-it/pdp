@@ -1,0 +1,46 @@
+openapi: 3.0.3
+info:
+  title: Hotel Booking API
+  version: 1.0.0
+servers:
+  - url: http://localhost:5080
+paths:
+  /rooms:
+    get:
+      summary: Search available rooms
+      parameters:
+        - {name: checkIn, in: query, required: true, schema: {type: string, format: date}}
+        - {name: checkOut, in: query, required: true, schema: {type: string, format: date}}
+        - {name: limit, in: query, schema: {type: integer, default: 20, minimum: 1, maximum: 100}}
+        - {name: after, in: query, schema: {type: string}}
+      responses:
+        '200': {description: Available rooms}
+        '400': {description: Invalid dates or query}
+  /reservations:
+    post:
+      summary: Book a room
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [guestName, guestEmail, roomNumber, checkIn, checkOut]
+              properties:
+                guestName: {type: string}
+                guestEmail: {type: string, format: email}
+                roomNumber: {type: string}
+                checkIn: {type: string, format: date}
+                checkOut: {type: string, format: date}
+      responses:
+        '201': {description: Reservation accepted}
+        '400': {description: Invalid request or dates}
+        '409': {description: Room unavailable}
+  /reservations/{reservation_id}:
+    delete:
+      summary: Cancel a reservation
+      parameters:
+        - {name: reservation_id, in: path, required: true, schema: {type: string}}
+      responses:
+        '204': {description: Cancelled}
+        '404': {description: Reservation not found}

@@ -187,3 +187,10 @@ S1/S3 latency and load targets are not benchmark results. S2 concurrent safety
 is deliberately unmet. Real maintenance/pricing, the 30% policy, booking/payment
 integration, durable state and delivery retries are outside P06. S5 is covered
 for an immediate sender failure; S6 has the SMS example and import checks.
+
+# P07 design notes
+
+- FastAPI serves the API on port 5080; Uvicorn runs the ASGI app, while `--demo` and `--race` retain the P06 console flows.
+- PostgreSQL-backed room and reservation adapters implement existing contracts. The reservation cancellation adapter persists status changes.
+- API contract and runnable request examples are in `docs/openapi.yaml` and `docs/requests/`; capacity assumptions are estimates awaiting load measurement.
+- PostgreSQL overlap checks and inserts remain separate operations; concurrent booking safety still needs a database constraint or transaction strategy.
