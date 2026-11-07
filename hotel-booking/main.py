@@ -83,11 +83,18 @@ if __name__ == "__main__":
     else:
         from dotenv import load_dotenv
         import uvicorn
-        from hotel_booking.api import create_app
+        from hotel_booking.api import ApiStats, create_app
+        from hotel_booking.api_cache import RedisAvailabilityCache
         from hotel_booking.reservations.internal import PostgresReservationStore
         from hotel_booking.rooms.internal import PostgresRoomCatalog
 
         load_dotenv()
-        uvicorn.run(create_app(PostgresRoomCatalog(), PostgresReservationStore()),
+        stats = ApiStats()
+        catalog = PostgresRoomCatalog(on_query=stats.database_query)
+        store = PostgresReservationStore(on_query=stats.database_query)
+        cache = None
+        if os.getenv("CACHE_ENABLED", "true").lower() not in {"0", "false", "no"}:
+            cache = RedisAvailabilityCache.from_url(os.getenv("REDIS_URL", "redis://localhost:6379/0"))
+        uvicorn.run(create_app(catalog, store, cache, stats),
                     host=os.getenv("HOST", "0.0.0.0"),
                     port=int(os.getenv("PORT", "5080")))

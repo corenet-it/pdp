@@ -194,3 +194,22 @@ for an immediate sender failure; S6 has the SMS example and import checks.
 - PostgreSQL-backed room and reservation adapters implement existing contracts. The reservation cancellation adapter persists status changes.
 - API contract and runnable request examples are in `docs/openapi.yaml` and `docs/requests/`; capacity assumptions are estimates awaiting load measurement.
 - PostgreSQL overlap checks and inserts remain separate operations; concurrent booking safety still needs a database constraint or transaction strategy.
+
+# P08 design notes
+
+- Availability search uses cache-aside with Redis and a 30-second TTL. The key
+  is `availability:v{version}:{checkIn}:{checkOut}`; pagination is applied after
+  reading the complete cached availability result.
+- The room catalogue is loaded once at application startup. Each cold search in
+  the supplied two-room database therefore performs exactly two overlap
+  queries; a cache hit performs none.
+- Successful booking and cancellation increment `availability:version`.
+  Failed, invalid or conflicting changes do not invalidate the cache.
+- A cache miss carries the version it observed into the cache write. If a
+  booking invalidates while the database query is running, the older result is
+  stored only beneath the older version and cannot become current again.
+- Booking and cancellation never make a decision from Redis. If Redis is down,
+  searches fall back to PostgreSQL and mutations remain correct; old entries
+  also have a 30-second upper lifetime.
+- `/stats` exposes process-lifetime PostgreSQL query, cache-hit and cache-miss
+  counters. The measurement tool reports deltas so startup work is excluded.

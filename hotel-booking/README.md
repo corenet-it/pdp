@@ -1,6 +1,6 @@
-# Hotel booking · P03–P06
+# Hotel booking · P03–P08
 
-P03, P04, P05 va P06 materiallari asosida yig‘ilgan yakuniy Python loyihasi.
+P03–P08 materiallari asosida yig‘ilgan yakuniy Python loyihasi.
 Barcha joriy kod va hujjatlar shu papkada. Ishga tushirish uchun boshqa dars
 papkalariga murojaat qilinmaydi. Python 3.11 yoki yangiroq versiya kerak.
 
@@ -10,6 +10,20 @@ Terminalni `hotel-booking/` papkasida oching. `.env.example` faylidan `.env`
 yarating, so‘ng `docker compose up --build` bajaring. Compose PostgreSQL va API
 servislarini ishga tushiradi. FastAPI hujjatlari `http://localhost:5080/docs` da.
 Holatini ko‘rish uchun `docker compose ps`, loglar uchun `docker compose logs -f app`.
+
+Compose PostgreSQL bilan birga Redis cache’ni ham ishga tushiradi;
+`docker compose exec cache redis-cli ping` natijasi `PONG` bo‘lishi kerak.
+
+P08 qidiruv o‘lchovi:
+
+```sh
+python tools/measure.py
+curl http://localhost:5080/stats
+```
+
+Cache’siz bazaviy o‘lchov uchun
+`CACHE_ENABLED=false docker compose up -d --force-recreate app` buyrug‘idan
+foydalaning. To‘liq tartib va natija jadvali `docs/cache-experiment.md` da.
 
 P06 konsol namoyishlari:
 
@@ -88,6 +102,21 @@ ulanmagan. Demo haqiqiy to‘lov olmaydi, email yoki SMS jo‘natmaydi.
 
 Tekshiruv dalillari va 7-qadamni takrorlash tartibi:
 [P06 design notes](docs/design-notes.md#p06-design-notes).
+
+## P08 · Bajarilgan vazifalar
+
+| Qadam | Natija |
+|---|---|
+| 1. O‘lchash | `GET /stats`, `tools/measure.py`, average/p95 va query deltalari |
+| 2. Redis | Compose ichida healthcheck’li `cache` servisi |
+| 3. Cache-aside | 30 soniya TTL va versiyalangan availability kaliti |
+| 4. Invalidation | Muvaffaqiyatli POST/DELETE versiyani oshiradi; 2 ta API testi |
+| 5. Tahlil | Stale holat, hot key va keyingi bottleneck hujjatlashtirildi |
+| 6. Qaror | [ADR-002](docs/adr-002-cache-availability.md) |
+
+Benchmark tartibi va natija jadvali:
+[P08 cache experiment](docs/cache-experiment.md). Joriy lokal o‘lchovda p95
+14.26 ms dan 4.35 ms ga, database query soni 2,000 dan 2 taga tushdi.
 
 ## Kutilgan demo
 

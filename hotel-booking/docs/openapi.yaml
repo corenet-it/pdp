@@ -5,6 +5,21 @@ info:
 servers:
   - url: http://localhost:5080
 paths:
+  /stats:
+    get:
+      summary: Read cumulative database and availability-cache counters
+      responses:
+        '200':
+          description: Current process counters
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [databaseQueries, cacheHits, cacheMisses]
+                properties:
+                  databaseQueries: {type: integer, minimum: 0}
+                  cacheHits: {type: integer, minimum: 0}
+                  cacheMisses: {type: integer, minimum: 0}
   /rooms:
     get:
       summary: Search available rooms
