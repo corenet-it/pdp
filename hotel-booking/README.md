@@ -1,6 +1,6 @@
-# Hotel booking · P03–P08
+# Hotel booking · P03–P09
 
-P03–P08 materiallari asosida yig‘ilgan yakuniy Python loyihasi.
+P03–P09 materiallari asosida yig‘ilgan yakuniy Python loyihasi.
 Barcha joriy kod va hujjatlar shu papkada. Ishga tushirish uchun boshqa dars
 papkalariga murojaat qilinmaydi. Python 3.11 yoki yangiroq versiya kerak.
 
@@ -32,6 +32,29 @@ python -m unittest -v
 python main.py
 python main.py --race
 ```
+
+P09 HTTP race tekshiruvi uchun API’ni ataylab kengaytirilgan check/save oralig‘i
+bilan ishga tushiring, so‘ng boshqa terminaldan race tool’ni bajaring:
+
+```sh
+HOTEL_SLOW_STEP=1 python main.py
+python tools/race_http.py
+```
+
+P08’dan qolgan Docker volume `db/init.sql`ni qayta bajarmaydi. Uni P09 schema’ga
+bir marta ko‘tarish uchun:
+
+```sh
+docker compose exec -T db psql -v ON_ERROR_STOP=1 -U hotel -d hotel < db/p09-migration.sql
+```
+
+Migration mavjud overlapping `Confirmed` qatorlar bo‘lsa ataylab to‘xtaydi;
+constraint qo‘shilishidan oldin haqiqiy bronlardan qaysi birini bekor qilish
+bo‘yicha biznes qarori kerak.
+
+Ikkinchi app instance ham o‘sha PostgreSQL’ga ulangan bo‘lsa,
+`HOTEL_PORT=5081 python main.py` va `python tools/race_http.py http://localhost:5081`
+constraint process chegarasidan tashqarida ham ishlashini ko‘rsatadi.
 
 P06 domen testlari Python standart kutubxonasidan foydalanadi. API va PostgreSQL
 uchun bog‘liqliklar `requirements.txt`-da keltirilgan.
@@ -118,6 +141,21 @@ Benchmark tartibi va natija jadvali:
 [P08 cache experiment](docs/cache-experiment.md). Joriy lokal o‘lchovda p95
 14.26 ms dan 4.35 ms ga, database query soni 2,000 dan 2 taga tushdi.
 
+## P09 · Bajarilgan vazifalar
+
+| Qadam | Natija |
+|---|---|
+| 1. Race’ni ko‘rsatish | `tools/race_http.py`, `HOTEL_SLOW_STEP`, sequence ID |
+| 2. Interleaving | [Statement-by-statement trace](docs/interleaving.md) |
+| 3. Bir process lock | In-memory store check+save’ni bitta lock ichida bajaradi |
+| 4. Ikkinchi instance | DB constraint processlar orasida ham qoidani saqlaydi |
+| 5–6. Lock va version | Xarajatlar interleaving hujjatida solishtirildi |
+| 7. Exclusion constraint | `btree_gist`, `reservations_no_overlap`, 409 mapping |
+| 8. Qaror | [ADR-003](docs/adr-003-booking-concurrency.md) |
+
+Yakuniy tekshiruv: 16 ta Python testi va 3 ta import kontrakti — jami 19 ta
+yashil tekshiruv.
+
 ## Kutilgan demo
 
 ```text
@@ -132,9 +170,9 @@ Free rooms 12-14 Nov: R7, R8
 Confirmation emails sent: 2
 ```
 
-Race topshiriqqa ko‘ra saqlangan: `--race` R7 uchun ikkita `Confirmed` bron va
-`Double booking!` xabarini ko‘rsatadi. P06 faqat tuzilmani o‘zgartiradi; bu
-parallel bron qilish xatosini P09 da tuzatish rejalashtirilgan.
+P09’dan keyin `--race` R7 uchun bitta `Confirmed` bronni ko‘rsatadi: bir so‘rov
+`Accepted`, ikkinchisi `Unavailable`. PostgreSQL’dagi exclusion constraint yangi
+endpoint yoki ikkinchi app instance qoidani chetlab o‘ta olmasligini ta’minlaydi.
 
 ## Manbalar qanday birlashtirildi
 

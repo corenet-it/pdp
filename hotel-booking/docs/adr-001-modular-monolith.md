@@ -2,6 +2,10 @@
 
 Status: Accepted, 31 October 2026
 
+P09 follow-up (14 November 2026): ADR-003 added the database exclusion
+constraint required by S2. The historical P06 consequences below are retained
+as the state in which this decision was originally accepted.
+
 ## Context
 
 One small team builds and releases the app. P05 identifies Rooms, Reservations,

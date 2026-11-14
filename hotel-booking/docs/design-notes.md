@@ -213,3 +213,21 @@ for an immediate sender failure; S6 has the SMS example and import checks.
   also have a 30-second upper lifetime.
 - `/stats` exposes process-lifetime PostgreSQL query, cache-hit and cache-miss
   counters. The measurement tool reports deltas so startup work is excluded.
+
+# P09 design notes
+
+- The overlap pre-check remains for a readable ordinary-case 409, but correctness
+  no longer depends on the time between that query and the insert.
+- `InMemoryReservationStore.save` checks and appends under one lock. PostgreSQL
+  uses the partial `reservations_no_overlap` GiST exclusion constraint.
+- `OverlapRejected` is part of the Reservations public contract. The PostgreSQL
+  adapter maps only SQLSTATE 23P01 from the named overlap constraint; unrelated
+  integrity failures are not mislabeled as unavailable rooms.
+- Reservation IDs come from a PostgreSQL sequence. The in-memory adapter uses a
+  locked counter so non-overlapping concurrent bookings also receive unique IDs.
+- The FastAPI handler runs synchronous booking work in a thread pool. This keeps
+  the event loop responsive and lets the HTTP race tool create real overlap.
+- Two regression tests retain the rule: one issues concurrent HTTP bookings and
+  one bypasses the service pre-check and calls `save` directly.
+- The rejected lock/version alternatives and the statement interleaving are in
+  `docs/interleaving.md`; the decision is recorded in ADR-003.

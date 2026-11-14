@@ -1,11 +1,16 @@
 from __future__ import annotations
 
-from hotel_booking.reservations.domain import DateRange, Reservation
-from hotel_booking.rooms import Room
 import os
+import threading
 from datetime import date
 from typing import Callable
-from hotel_booking.reservations.domain import Guest, ReservationStatus
+
+from hotel_booking.reservations.booking import OverlapRejected
+from hotel_booking.reservations.domain import DateRange, Guest, Reservation, ReservationStatus
+from hotel_booking.rooms import Room
+
+
+NO_OVERLAP_CONSTRAINT = "reservations_no_overlap"
 
 
 class InMemoryReservationStore:
@@ -13,6 +18,8 @@ class InMemoryReservationStore:
 
     def __init__(self) -> None:
         self._rows: list[Reservation] = []
+        self._next_id = 101
+        self._lock = threading.Lock()
 
     def count(self) -> int:
         return len(self._rows)
@@ -20,8 +27,21 @@ class InMemoryReservationStore:
     def has_overlap(self, room: Room, stay: DateRange) -> bool:
         return any(row.blocks(room, stay) for row in self._rows)
 
+    def next_reservation_id(self) -> str:
+        with self._lock:
+            reservation_id = f"R{self._next_id}"
+            self._next_id += 1
+            return reservation_id
+
     def save(self, reservation: Reservation) -> None:
-        self._rows.append(reservation)
+        # Checking and appending must be one critical section. Otherwise two
+        # threads can both observe an empty list and both append.
+        with self._lock:
+            if self.has_overlap(reservation.room, reservation.stay):
+                raise OverlapRejected(
+                    f"{reservation.room.number} already has a confirmed reservation for these nights."
+                )
+            self._rows.append(reservation)
 
     def find(self, reservation_id: str) -> Reservation | None:
         return next((row for row in self._rows if row.id == reservation_id), None)
@@ -37,6 +57,7 @@ class PostgresReservationStore:
 
     def _connect(self):
         import psycopg
+
         return psycopg.connect(self.dsn)
 
     def count(self) -> int:
@@ -47,30 +68,79 @@ class PostgresReservationStore:
     def has_overlap(self, room: Room, stay: DateRange) -> bool:
         with self._connect() as connection:
             self.on_query()
-            return connection.execute("SELECT EXISTS (SELECT 1 FROM reservations WHERE room_number=%s AND status='Confirmed' AND check_in < %s AND check_out > %s)", (room.number, stay.check_out, stay.check_in)).fetchone()[0]
+            return connection.execute(
+                "SELECT EXISTS (SELECT 1 FROM reservations WHERE room_number=%s "
+                "AND status='Confirmed' AND check_in < %s AND check_out > %s)",
+                (room.number, stay.check_out, stay.check_in),
+            ).fetchone()[0]
 
-    def save(self, reservation: Reservation) -> None:
+    def next_reservation_id(self) -> str:
         with self._connect() as connection:
             self.on_query()
-            connection.execute("INSERT INTO reservations (id, guest_name, guest_email, room_number, check_in, check_out, status) VALUES (%s,%s,%s,%s,%s,%s,%s)", (reservation.id, reservation.guest.name, reservation.guest.email, reservation.room.number, reservation.stay.check_in, reservation.stay.check_out, reservation.status.value))
+            value = connection.execute("SELECT nextval('reservation_ids')").fetchone()[0]
+            return f"R{value}"
+
+    def save(self, reservation: Reservation) -> None:
+        import psycopg
+
+        try:
+            with self._connect() as connection:
+                self.on_query()
+                connection.execute(
+                    "INSERT INTO reservations "
+                    "(id, guest_name, guest_email, room_number, check_in, check_out, status) "
+                    "VALUES (%s,%s,%s,%s,%s,%s,%s)",
+                    (
+                        reservation.id,
+                        reservation.guest.name,
+                        reservation.guest.email,
+                        reservation.room.number,
+                        reservation.stay.check_in,
+                        reservation.stay.check_out,
+                        reservation.status.value,
+                    ),
+                )
+        except psycopg.errors.ExclusionViolation as error:
+            # SQLSTATE 23P01 can describe any exclusion constraint. Only map
+            # the named booking rule; every other database error remains real.
+            if error.diag.constraint_name == NO_OVERLAP_CONSTRAINT:
+                raise OverlapRejected(
+                    f"{reservation.room.number} already has a confirmed reservation for these nights."
+                ) from error
+            raise
 
     def find(self, reservation_id: str) -> Reservation | None:
         with self._connect() as connection:
             self.on_query()
-            row = connection.execute("SELECT id, guest_name, guest_email, room_number, check_in, check_out, status, type FROM reservations JOIN rooms ON rooms.number=reservations.room_number WHERE id=%s", (reservation_id,)).fetchone()
+            row = connection.execute(
+                "SELECT id, guest_name, guest_email, room_number, check_in, check_out, "
+                "status, type FROM reservations "
+                "JOIN rooms ON rooms.number=reservations.room_number WHERE id=%s",
+                (reservation_id,),
+            ).fetchone()
         if row is None:
             return None
-        reservation = Reservation(row[0], Guest(row[1], row[2]), Room(row[3], row[7]), DateRange(row[4], row[5]))
+        reservation = Reservation(
+            row[0], Guest(row[1], row[2]), Room(row[3], row[7]), DateRange(row[4], row[5])
+        )
         reservation.status = ReservationStatus(row[6])
         return reservation
 
     def count_confirmed(self, room: Room, stay: DateRange) -> int:
         with self._connect() as connection:
             self.on_query()
-            return connection.execute("SELECT count(*) FROM reservations WHERE room_number=%s AND status='Confirmed' AND check_in < %s AND check_out > %s", (room.number, stay.check_out, stay.check_in)).fetchone()[0]
+            return connection.execute(
+                "SELECT count(*) FROM reservations WHERE room_number=%s "
+                "AND status='Confirmed' AND check_in < %s AND check_out > %s",
+                (room.number, stay.check_out, stay.check_in),
+            ).fetchone()[0]
 
     def cancel(self, reservation_id: str) -> bool:
         with self._connect() as connection:
             self.on_query()
-            cursor = connection.execute("UPDATE reservations SET status='Cancelled' WHERE id=%s AND status='Confirmed'", (reservation_id,))
+            cursor = connection.execute(
+                "UPDATE reservations SET status='Cancelled' "
+                "WHERE id=%s AND status='Confirmed'",
+                (reservation_id,),
+            )
             return cursor.rowcount > 0

@@ -6,6 +6,7 @@ import threading
 
 from fastapi import FastAPI, Query, Request
 from fastapi.responses import JSONResponse, Response
+from starlette.concurrency import run_in_threadpool
 
 from hotel_booking.api_cache import AvailabilityCache
 from hotel_booking.notifications.internal import EmailNotificationSender
@@ -41,13 +42,13 @@ class ApiStats:
 
 
 def create_app(catalog, store, cache: AvailabilityCache | None = None,
-               stats: ApiStats | None = None) -> FastAPI:
+               stats: ApiStats | None = None, slow_step_seconds: float = 0) -> FastAPI:
     app = FastAPI(title="Hotel Booking API", version="1.0.0", openapi_url="/openapi.json", docs_url="/docs")
     app_stats = stats or ApiStats()
     rooms = catalog.all()
 
     def service() -> BookingService:
-        return BookingService(rooms, store, EmailNotificationSender())
+        return BookingService(rooms, store, EmailNotificationSender(), slow_step_seconds)
 
     @app.get("/openapi.yaml", include_in_schema=False)
     def openapi_yaml():
@@ -83,7 +84,10 @@ def create_app(catalog, store, cache: AvailabilityCache | None = None,
             room = next(room for room in rooms if room.number == body["roomNumber"])
         except (KeyError, TypeError, ValueError, StopIteration):
             return JSONResponse({"error": "Invalid booking request"}, status_code=400)
-        result = service().reserve(guest, room, stay)
+        # BookingService is synchronous (and the P09 race demo deliberately
+        # pauses it). Run it outside the event loop so concurrent HTTP requests
+        # can actually overlap.
+        result = await run_in_threadpool(service().reserve, guest, room, stay)
         if result.outcome == "InvalidDates":
             return JSONResponse({"error": result.outcome}, status_code=400)
         if result.outcome == "Unavailable":

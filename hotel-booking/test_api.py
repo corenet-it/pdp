@@ -1,11 +1,21 @@
+import threading
 import unittest
+from datetime import date
+
 from fastapi.testclient import TestClient
 
 from hotel_booking.api import ApiStats, create_app
 from hotel_booking.api_cache import InMemoryAvailabilityCache
+from hotel_booking.reservations import DateRange, Guest, OverlapRejected, Reservation
 from hotel_booking.reservations.internal import InMemoryReservationStore
 from hotel_booking.rooms import Room
 from hotel_booking.rooms.internal import InMemoryRoomCatalog
+
+
+R7 = Room("R7", "Standard")
+MAYA = {"guestName": "Maya", "guestEmail": "maya@example.com", "roomNumber": "R7",
+        "checkIn": "2026-11-12", "checkOut": "2026-11-14"}
+OMAR = {**MAYA, "guestName": "Omar", "guestEmail": "omar@example.com"}
 
 
 class ApiTests(unittest.TestCase):
@@ -13,7 +23,7 @@ class ApiTests(unittest.TestCase):
         self.cache = InMemoryAvailabilityCache()
         self.stats = ApiStats()
         app = create_app(
-            InMemoryRoomCatalog([Room("R7", "Standard"), Room("R8", "Deluxe")]),
+            InMemoryRoomCatalog([R7, Room("R8", "Deluxe")]),
             InMemoryReservationStore(),
             self.cache,
             self.stats,
@@ -69,6 +79,45 @@ class ApiTests(unittest.TestCase):
 
         self.assertEqual(["R7", "R8"], [room["number"] for room in rooms])
         self.assertEqual(3, self.cache.version)
+
+    def test_two_bookings_at_the_same_moment_give_the_room_one_reservation(self):
+        """Both pre-checks pass, but the store may save only one booking."""
+        store = InMemoryReservationStore()
+        app = create_app(
+            InMemoryRoomCatalog([R7]), store, slow_step_seconds=0.3
+        )
+        client = TestClient(app)
+        answers: dict[str, int] = {}
+
+        maya = threading.Thread(
+            target=lambda: answers.update(maya=client.post("/reservations", json=MAYA).status_code)
+        )
+        omar = threading.Thread(
+            target=lambda: answers.update(omar=client.post("/reservations", json=OMAR).status_code)
+        )
+        maya.start()
+        omar.start()
+        maya.join()
+        omar.join()
+
+        self.assertEqual([201, 409], sorted(answers.values()))
+        stay = DateRange(date(2026, 11, 12), date(2026, 11, 14))
+        self.assertEqual(1, store.count_confirmed(R7, stay))
+
+    def test_store_refuses_overlap_even_when_pre_check_is_bypassed(self):
+        store = InMemoryReservationStore()
+        stay = DateRange(date(2026, 11, 12), date(2026, 11, 14))
+        store.save(Reservation("R101", Guest("Maya", "maya@example.com"), R7, stay))
+        overlapping = Reservation(
+            "R102",
+            Guest("Omar", "omar@example.com"),
+            R7,
+            DateRange(date(2026, 11, 13), date(2026, 11, 15)),
+        )
+
+        with self.assertRaises(OverlapRejected):
+            store.save(overlapping)
+        self.assertEqual(1, store.count_confirmed(R7, stay))
 
 
 if __name__ == "__main__":

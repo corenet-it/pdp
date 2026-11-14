@@ -34,6 +34,10 @@
 - **P06 evidence / gap:** Sequential overlap tests pass. `python main.py --race`
   deliberately produces two accepted bookings. This target is not met in P06;
   database concurrency protection belongs to P09.
+- **P09 evidence:** The in-memory and HTTP concurrency tests accept one request
+  and reject one. A Docker/PostgreSQL race also leaves one row, and a direct
+  overlapping SQL insert is rejected by `reservations_no_overlap`. The full
+  1,000-pair target remains a proposed load test rather than a measured claim.
 
 ## S3 · Timely booking result
 

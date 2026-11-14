@@ -52,3 +52,7 @@ work nearly disappears after the first request. The pressure moves to
 `POST /reservations` and PostgreSQL: overlap checking, reservation counting and
 inserting still execute for every attempt. P09 should make that write path
 atomic; cache work must not disguise the existing check-then-save race.
+
+P09 now makes the write invariant atomic with PostgreSQL's
+`reservations_no_overlap` exclusion constraint. The Redis cache remains outside
+the booking decision and therefore cannot weaken that guarantee.

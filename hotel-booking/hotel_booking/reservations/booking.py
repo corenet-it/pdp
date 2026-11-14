@@ -9,12 +9,29 @@ from hotel_booking.reservations.domain import DateRange, Guest, Reservation
 from hotel_booking.rooms import Room
 
 
+class OverlapRejected(Exception):
+    """Saving would create two confirmed reservations for the same room and night.
+
+    Every reservation store keeps this promise. The in-memory adapter checks
+    while holding its lock; PostgreSQL enforces the same promise with the
+    ``reservations_no_overlap`` exclusion constraint.
+    """
+
+
 class ReservationStore(Protocol):
     """What BookingService needs from storage. Today a list in memory; from P07 a database."""
 
     def count(self) -> int: ...
     def has_overlap(self, room: Room, stay: DateRange) -> bool: ...
-    def save(self, reservation: Reservation) -> None: ...
+
+    def next_reservation_id(self) -> str:
+        """Return an id that cannot be handed to another concurrent request."""
+        ...
+
+    def save(self, reservation: Reservation) -> None:
+        """Save the reservation or raise OverlapRejected."""
+        ...
+
     def find(self, reservation_id: str) -> Reservation | None: ...
     def count_confirmed(self, room: Room, stay: DateRange) -> int: ...
 
@@ -50,8 +67,13 @@ class BookingService:
 
         time.sleep(self.slow_step_seconds)  # 0 normally; the race demo makes this step slow
 
-        reservation = Reservation(f"R{101 + self.store.count()}", guest, room, stay)
-        self.store.save(reservation)
+        reservation = Reservation(self.store.next_reservation_id(), guest, room, stay)
+        try:
+            self.store.save(reservation)
+        except OverlapRejected:
+            # Another request saved after the pre-check. Give the guest the
+            # same result as an overlap found by the pre-check.
+            return BookingResult("Unavailable")
         try:
             # Notifications gets its own message: the five fields it needs, not the Reservation.
             self.notifications.send_confirmation(

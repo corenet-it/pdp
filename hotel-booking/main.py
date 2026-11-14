@@ -1,7 +1,10 @@
-"""P06 - Hotel booking: the P04 app as a modular monolith with four modules.
+"""P09 - Hotel booking with PostgreSQL-enforced booking concurrency.
 
-python main.py          -> the normal demo
-python main.py --race   -> two guests book the same room at the same moment
+python main.py          -> API on HOTEL_PORT (or PORT), default 5080
+python main.py --demo   -> the in-memory console demo
+python main.py --race   -> the repaired in-memory concurrency demo
+
+HOTEL_SLOW_STEP widens the HTTP check/save gap for tools/race_http.py.
 """
 from __future__ import annotations
 
@@ -95,6 +98,7 @@ if __name__ == "__main__":
         cache = None
         if os.getenv("CACHE_ENABLED", "true").lower() not in {"0", "false", "no"}:
             cache = RedisAvailabilityCache.from_url(os.getenv("REDIS_URL", "redis://localhost:6379/0"))
-        uvicorn.run(create_app(catalog, store, cache, stats),
+        slow_step = float(os.getenv("HOTEL_SLOW_STEP", "0"))
+        uvicorn.run(create_app(catalog, store, cache, stats, slow_step),
                     host=os.getenv("HOST", "0.0.0.0"),
-                    port=int(os.getenv("PORT", "5080")))
+                    port=int(os.getenv("HOTEL_PORT", os.getenv("PORT", "5080"))))
