@@ -1,4 +1,4 @@
-"""P09 - Hotel booking with PostgreSQL-enforced booking concurrency.
+"""P10 - Hotel booking with queued confirmation emails.
 
 python main.py          -> API on HOTEL_PORT (or PORT), default 5080
 python main.py --demo   -> the in-memory console demo
@@ -99,6 +99,9 @@ if __name__ == "__main__":
         if os.getenv("CACHE_ENABLED", "true").lower() not in {"0", "false", "no"}:
             cache = RedisAvailabilityCache.from_url(os.getenv("REDIS_URL", "redis://localhost:6379/0"))
         slow_step = float(os.getenv("HOTEL_SLOW_STEP", "0"))
-        uvicorn.run(create_app(catalog, store, cache, stats, slow_step),
+        capacity = os.getenv("NOTIFICATION_CAPACITY", "8")
+        uvicorn.run(create_app(catalog, store, cache, stats, slow_step,
+                               notification_capacity=None if capacity == "sync" else int(capacity),
+                               email_delay=float(os.getenv("EMAIL_DELAY_SECONDS", "1"))),
                     host=os.getenv("HOST", "0.0.0.0"),
                     port=int(os.getenv("HOTEL_PORT", os.getenv("PORT", "5080"))))

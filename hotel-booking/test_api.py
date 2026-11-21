@@ -1,6 +1,10 @@
 import threading
 import unittest
 from datetime import date
+from unittest.mock import Mock
+
+from hotel_booking.notifications import Confirmation, NotificationCounts
+from hotel_booking.notifications.internal import QueuedNotificationSender
 
 from fastapi.testclient import TestClient
 
@@ -37,7 +41,8 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(["R7", "R8"], [room["number"] for room in response.json()["rooms"]])
         self.client.get("/rooms?checkIn=2026-11-12&checkOut=2026-11-14")
         self.assertEqual(
-            {"databaseQueries": 0, "cacheHits": 1, "cacheMisses": 1},
+            {"databaseQueries": 0, "cacheHits": 1, "cacheMisses": 1,
+             "queued": 0, "sent": 0, "failed": 0, "dropped": 0},
             self.client.get("/stats").json(),
         )
 
@@ -118,6 +123,48 @@ class ApiTests(unittest.TestCase):
         with self.assertRaises(OverlapRejected):
             store.save(overlapping)
         self.assertEqual(1, store.count_confirmed(R7, stay))
+
+
+class NotificationTests(unittest.TestCase):
+    message = Confirmation("R101", "maya@example.com", "R7", date(2026, 11, 12), date(2026, 11, 14))
+
+    def test_full_queue_drops_without_waiting(self):
+        entered, release = threading.Event(), threading.Event()
+        sender = Mock()
+
+        def wait_for_release(message):
+            entered.set()
+            release.wait(5)
+
+        sender.send_confirmation.side_effect = wait_for_release
+        queue = QueuedNotificationSender(sender, capacity=1)
+        try:
+            queue.send_confirmation(self.message)
+            self.assertTrue(entered.wait(2))
+            queue.send_confirmation(self.message)
+            queue.send_confirmation(self.message)
+            self.assertEqual(NotificationCounts(queued=1, dropped=1), queue.counts())
+        finally:
+            release.set()
+            queue.close()
+        self.assertEqual(NotificationCounts(sent=2, dropped=1), queue.counts())
+
+    def test_worker_continues_after_failure(self):
+        sender = Mock()
+        sender.send_confirmation.side_effect = [OSError("offline"), None]
+        queue = QueuedNotificationSender(sender)
+        queue.send_confirmation(self.message)
+        queue.send_confirmation(self.message)
+        queue.close()
+        self.assertEqual(NotificationCounts(sent=1, failed=1), queue.counts())
+
+    def test_http_shutdown_drains_accepted_booking(self):
+        app = create_app(InMemoryRoomCatalog([R7]), InMemoryReservationStore(),
+                         notification_capacity=1, email_delay=0.05)
+        with TestClient(app) as client:
+            self.assertEqual(201, client.post("/reservations", json=MAYA).status_code)
+            self.assertEqual(409, client.post("/reservations", json=OMAR).status_code)
+        self.assertEqual(1, client.get("/stats").json()["sent"])
 
 
 if __name__ == "__main__":

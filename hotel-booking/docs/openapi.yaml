@@ -7,7 +7,7 @@ servers:
 paths:
   /stats:
     get:
-      summary: Read cumulative database and availability-cache counters
+      summary: Read database, availability-cache and notification statistics
       responses:
         '200':
           description: Current process counters
@@ -15,11 +15,15 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [databaseQueries, cacheHits, cacheMisses]
+                required: [databaseQueries, cacheHits, cacheMisses, queued, sent, failed, dropped]
                 properties:
                   databaseQueries: {type: integer, minimum: 0}
                   cacheHits: {type: integer, minimum: 0}
                   cacheMisses: {type: integer, minimum: 0}
+                  queued: {type: integer, minimum: 0}
+                  sent: {type: integer, minimum: 0}
+                  failed: {type: integer, minimum: 0}
+                  dropped: {type: integer, minimum: 0}
   /rooms:
     get:
       summary: Search available rooms

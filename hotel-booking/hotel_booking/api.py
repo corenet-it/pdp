@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+from contextlib import asynccontextmanager
+from dataclasses import asdict
 from datetime import date
 from pathlib import Path
 import threading
@@ -9,7 +11,8 @@ from fastapi.responses import JSONResponse, Response
 from starlette.concurrency import run_in_threadpool
 
 from hotel_booking.api_cache import AvailabilityCache
-from hotel_booking.notifications.internal import EmailNotificationSender
+from hotel_booking.notifications.internal import EmailNotificationSender, QueuedNotificationSender
+from hotel_booking.notifications import NotificationCounts
 from hotel_booking.reservations import BookingService, DateRange, Guest
 
 
@@ -42,13 +45,28 @@ class ApiStats:
 
 
 def create_app(catalog, store, cache: AvailabilityCache | None = None,
-               stats: ApiStats | None = None, slow_step_seconds: float = 0) -> FastAPI:
-    app = FastAPI(title="Hotel Booking API", version="1.0.0", openapi_url="/openapi.json", docs_url="/docs")
+               stats: ApiStats | None = None, slow_step_seconds: float = 0, *,
+               notification_capacity: int | None = None, email_delay: float = 0) -> FastAPI:
+    email = EmailNotificationSender(email_delay)
+    queue = None
+
+    @asynccontextmanager
+    async def lifespan(app):
+        nonlocal queue
+        if notification_capacity is not None:
+            queue = QueuedNotificationSender(email, notification_capacity)
+        try:
+            yield
+        finally:
+            if queue is not None:
+                await run_in_threadpool(queue.close)
+
+    app = FastAPI(lifespan=lifespan, title="Hotel Booking API", version="1.0.0", openapi_url="/openapi.json", docs_url="/docs")
     app_stats = stats or ApiStats()
     rooms = catalog.all()
 
     def service() -> BookingService:
-        return BookingService(rooms, store, EmailNotificationSender(), slow_step_seconds)
+        return BookingService(rooms, store, queue or email, slow_step_seconds)
 
     @app.get("/openapi.yaml", include_in_schema=False)
     def openapi_yaml():
@@ -56,7 +74,8 @@ def create_app(catalog, store, cache: AvailabilityCache | None = None,
 
     @app.get("/stats")
     def get_stats():
-        return app_stats.snapshot()
+        counts = queue.counts() if queue else NotificationCounts(sent=email.sent)
+        return {**app_stats.snapshot(), **asdict(counts)}
 
     @app.get("/rooms")
     def search(checkIn: date, checkOut: date, limit: int = Query(20, ge=1, le=100), after: str = ""):

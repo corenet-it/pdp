@@ -18,3 +18,11 @@ class Confirmation:
 
 class NotificationSender(Protocol):
     def send_confirmation(self, confirmation: Confirmation) -> None: ...
+
+
+@dataclass(frozen=True)
+class NotificationCounts:
+    queued: int = 0
+    sent: int = 0
+    failed: int = 0
+    dropped: int = 0

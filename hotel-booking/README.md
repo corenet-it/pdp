@@ -1,6 +1,6 @@
-# Hotel booking · P03–P09
+# Hotel booking · P03–P10
 
-P03–P09 materiallari asosida yig‘ilgan yakuniy Python loyihasi.
+P03–P10 materiallari asosida yig‘ilgan yakuniy Python loyihasi.
 Barcha joriy kod va hujjatlar shu papkada. Ishga tushirish uchun boshqa dars
 papkalariga murojaat qilinmaydi. Python 3.11 yoki yangiroq versiya kerak.
 
@@ -188,3 +188,15 @@ tiklandi. P03 design notes matni boshida saqlandi, keyin P04/P06 bo‘limlari
 qo‘shildi. Eski `Step2` testlari P03 dagi `EmailSender` va konkret
 `ReservationStore` nomlarini ishlatadi; yakuniy test to‘plami ularning o‘rnini
 bosgan P04/P06 dagi 8 ta testdan iborat.
+
+## P10 · Tasdiqlash xatlari navbati
+
+`docker compose up -d --build` buyrug‘i API, PostgreSQL va Redis’ni ishga tushiradi.
+API manzili `http://localhost:5080`. Bitta ishchi tasdiqlash xatlarini yuboradi,
+navbatda sakkizta xat kutishi mumkin. Har bir xat uchun bir soniya kechikish
+simulyatsiya qilinadi.
+
+`python tools/burst.py 2098-01-01` R7 uchun ketma-ket 30 ta bir kechalik bron
+yaratadi va javob vaqtining medianasini hamda navbat statistikasini chiqaradi.
+Har safar bo‘sh sanalar oralig‘ini tanlang. [Tajriba natijalari](docs/queue-trace.md)
+va [ADR-004](docs/adr-004-notification-concurrency.md).

@@ -231,3 +231,11 @@ for an immediate sender failure; S6 has the SMS example and import checks.
   one bypasses the service pre-check and calls `save` directly.
 - The rejected lock/version alternatives and the statement interleaving are in
   `docs/interleaving.md`; the decision is recorded in ADR-003.
+
+# P10 design notes
+
+A successful reservation hands its immutable confirmation to the process-wide
+sender after the store accepts the reservation. One worker waits for the mail
+server while the request returns. Queue capacity is eight waiting messages,
+plus one delivery in progress. See [the measured burst](queue-trace.md) and
+[ADR-004](adr-004-notification-concurrency.md).
